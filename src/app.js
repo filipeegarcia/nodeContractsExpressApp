@@ -3,19 +3,21 @@ const bodyParser = require('body-parser');
 const {sequelize} = require('./model')
 const {getProfile} = require('./middleware/getProfile')
 const app = express();
+
+const adminRoutes = require('./routes/adminRoutes');
+const balancesRoutes = require('./routes/balancesRoutes');
+const contractsRoutes = require('./routes/contractsRoutes');
+const jobsRoutes = require('./routes/jobsRoutes');
+
 app.use(bodyParser.json());
 app.set('sequelize', sequelize)
 app.set('models', sequelize.models)
+app.use(getProfile)
 
-/**
- * FIX ME!
- * @returns contract by id
- */
-app.get('/contracts/:id',getProfile ,async (req, res) =>{
-    const {Contract} = req.app.get('models')
-    const {id} = req.params
-    const contract = await Contract.findOne({where: {id}})
-    if(!contract) return res.status(404).end()
-    res.json(contract)
-})
+app.use('/admin', adminRoutes);
+app.use('/balances', balancesRoutes);
+app.use('/contracts', contractsRoutes);
+app.use('/jobs', jobsRoutes);
+
+
 module.exports = app;
